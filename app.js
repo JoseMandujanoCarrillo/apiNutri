@@ -1,0 +1,42 @@
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+const usuariosRoutes = require('./routes/usuarios');
+const connectDB = require('./config/db'); // Importar la conexión a la base de datos
+
+const app = express();
+
+// Conectar a la base de datos
+connectDB()
+  .then(() => console.log('Conexión a la base de datos establecida correctamente'))
+  .catch((error) => console.error('Error al conectar a la base de datos:', error.message));
+
+// Swagger definition
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API de Usuarios',
+      version: '1.0.0',
+      description: 'Documentación de la API para gestionar usuarios',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      },
+    ],
+  },
+  apis: ['./routes/*.js'], // Path to the API docs
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.use(express.json());
+app.use('/usuarios', usuariosRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en  http://localhost:${PORT}`);
+  console.log(`Servidor corriendo con swagger en  http://localhost:${PORT}/api-docs`);
+});
