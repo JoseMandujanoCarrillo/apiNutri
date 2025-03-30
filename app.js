@@ -3,6 +3,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const usuariosRoutes = require('./routes/usuarios');
 const connectDB = require('./config/db'); // Importar la conexión a la base de datos
+const adminRoutes = require('./routes/admins');
 
 const app = express();
 
@@ -34,7 +35,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json());
 app.use('/usuarios', usuariosRoutes);
-
+app.use('/admins', adminRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en  http://localhost:${PORT}`);
