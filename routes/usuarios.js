@@ -10,6 +10,8 @@ const SECRET_KEY = process.env.JWT_SECRET || 'secret';
  * /usuarios:
  *   get:
  *     summary: Obtener todos los usuarios
+ *     tags:
+ *       - Usuarios
  *     responses:
  *       200:
  *         description: Lista de usuarios
@@ -30,6 +32,8 @@ router.get('/', async (req, res) => {
  * /usuarios/{id}:
  *   get:
  *     summary: Obtener un usuario por ID
+ *     tags:
+ *       - Usuarios
  *     parameters:
  *       - name: id
  *         in: path
@@ -58,6 +62,8 @@ router.get('/:id', async (req, res) => {
  * /usuarios:
  *   post:
  *     summary: Crear un nuevo usuario
+ *     tags:
+ *       - Usuarios
  *     requestBody:
  *       required: true
  *       content:
@@ -114,6 +120,8 @@ router.post('/', async (req, res) => {
  * /usuarios/register:
  *   post:
  *     summary: Registrar un nuevo usuario y obtener un token
+ *     tags:
+ *       - Usuarios
  *     requestBody:
  *       required: true
  *       content:
@@ -171,6 +179,8 @@ router.post('/register', async (req, res) => {
  * /usuarios/login:
  *   post:
  *     summary: Autenticar un usuario y obtener un token
+ *     tags:
+ *       - Usuarios
  *     requestBody:
  *       required: true
  *       content:
@@ -215,6 +225,8 @@ router.post('/login', async (req, res) => {
  * /usuarios/{id}:
  *   put:
  *     summary: Actualizar un usuario existente
+ *     tags:
+ *       - Usuarios
  *     parameters:
  *       - name: id
  *         in: path
@@ -267,6 +279,8 @@ router.put('/:id', async (req, res) => {
  * /usuarios/{id}:
  *   delete:
  *     summary: Eliminar un usuario
+ *     tags:
+ *       - Usuarios
  *     parameters:
  *       - name: id
  *         in: path

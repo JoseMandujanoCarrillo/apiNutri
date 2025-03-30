@@ -10,6 +10,8 @@ const SECRET_KEY = process.env.JWT_SECRET || 'secret';
  * /admins:
  *   get:
  *     summary: Obtener todos los administradores
+ *     tags:
+ *       - Administradores
  *     responses:
  *       200:
  *         description: Lista de administradores
@@ -30,6 +32,8 @@ router.get('/', async (req, res) => {
  * /admins/{id}:
  *   get:
  *     summary: Obtener un administrador por ID
+ *     tags:
+ *       - Administradores
  *     parameters:
  *       - name: id
  *         in: path
@@ -58,6 +62,8 @@ router.get('/:id', async (req, res) => {
  * /admins:
  *   post:
  *     summary: Crear un nuevo administrador
+ *     tags:
+ *       - Administradores
  *     requestBody:
  *       required: true
  *       content:
@@ -101,6 +107,8 @@ router.post('/', async (req, res) => {
  * /admins/login:
  *   post:
  *     summary: Autenticar un administrador y obtener un token
+ *     tags:
+ *       - Administradores
  *     requestBody:
  *       required: true
  *       content:
@@ -145,6 +153,8 @@ router.post('/login', async (req, res) => {
  * /admins/{id}:
  *   put:
  *     summary: Actualizar un administrador existente
+ *     tags:
+ *       - Administradores
  *     parameters:
  *       - name: id
  *         in: path
@@ -188,6 +198,8 @@ router.put('/:id', async (req, res) => {
  * /admins/{id}:
  *   delete:
  *     summary: Eliminar un administrador
+ *     tags:
+ *       - Administradores
  *     parameters:
  *       - name: id
  *         in: path
