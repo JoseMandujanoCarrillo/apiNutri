@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const usuarioSchema = new mongoose.Schema({
+const AdminSchema = new mongoose.Schema({
   correo: {
     type: String,
     required: true,
@@ -63,4 +63,4 @@ const adminSchema = new mongoose.Schema({
 // Especificar el nombre de la colección como "Admin"
 const Admin = mongoose.model('Admin', adminSchema, 'Admin');
 
-module.exports = { Usuario, Admin };
+module.exports =  Admin;

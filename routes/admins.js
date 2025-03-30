@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { Admin } = require('../models/Usuario');
+const Admin = require('../models/Admin'); // Asegúrate de que Admin esté exportado correctamente desde el modelo
 
 const SECRET_KEY = process.env.JWT_SECRET || 'secret';
 
