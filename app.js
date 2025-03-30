@@ -22,7 +22,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://apinutri-6zku.onrender.com',
       },
     ],
   },
