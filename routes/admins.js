@@ -214,13 +214,18 @@ router.put('/:id', async (req, res) => {
  *         description: Error en la solicitud
  */
 router.delete('/:id', async (req, res) => {
-  try {
-    const adminEliminado = await Admin.findByIdAndDelete(req.params.id);
-    if (!adminEliminado) return res.status(404).json({ mensaje: 'Administrador no encontrado' });
-    res.json({ mensaje: 'Administrador eliminado correctamente' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    try {
+      console.log('ID recibido:', req.params.id);
+      const adminEliminado = await Admin.findByIdAndDelete(req.params.id);
+      if (!adminEliminado) {
+        console.log('Administrador no encontrado');
+        return res.status(404).json({ mensaje: 'Administrador no encontrado' });
+      }
+      res.json({ mensaje: 'Administrador eliminado correctamente' });
+    } catch (error) {
+      console.error('Error al eliminar administrador:', error);
+      res.status(400).json({ error: error.message });
+    }
+  });
 
 module.exports = router;
