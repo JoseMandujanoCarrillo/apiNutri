@@ -9,19 +9,50 @@ const SECRET_KEY = process.env.JWT_SECRET || 'secret';
  * @swagger
  * /usuarios:
  *   get:
- *     summary: Obtener todos los usuarios
+ *     summary: Obtener todos los usuarios con paginación
  *     tags:
  *       - Usuarios
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Cantidad de usuarios por página
  *     responses:
  *       200:
- *         description: Lista de usuarios
+ *         description: Lista de usuarios paginados
  *       500:
  *         description: Error del servidor
  */
 router.get('/', async (req, res) => {
   try {
-    const usuarios = await Usuario.find();
-    res.json(usuarios);
+    // Convertir los parámetros de consulta a números
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    
+    // Calcular la cantidad de documentos a omitir
+    const skip = (page - 1) * limit;
+    
+    // Realizar la consulta con skip y limit
+    const usuarios = await Usuario.find().skip(skip).limit(limit);
+    
+    // Opcionalmente, se podría incluir la cantidad total de usuarios para mayor contexto
+    const totalUsuarios = await Usuario.countDocuments();
+    
+    res.json({
+      page,
+      limit,
+      totalUsuarios,
+      totalPaginas: Math.ceil(totalUsuarios / limit),
+      usuarios
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
