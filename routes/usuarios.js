@@ -33,19 +33,11 @@ const SECRET_KEY = process.env.JWT_SECRET || 'secret';
  */
 router.get('/', async (req, res) => {
   try {
-    // Convertir los parámetros de consulta a números
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    
-    // Calcular la cantidad de documentos a omitir
     const skip = (page - 1) * limit;
-    
-    // Realizar la consulta con skip y limit
     const usuarios = await Usuario.find().skip(skip).limit(limit);
-    
-    // Opcionalmente, se podría incluir la cantidad total de usuarios para mayor contexto
     const totalUsuarios = await Usuario.countDocuments();
-    
     res.json({
       page,
       limit,
@@ -108,6 +100,10 @@ router.get('/:id', async (req, res) => {
  *                 type: string
  *               nombre:
  *                 type: string
+ *               apellidoPaterno:
+ *                 type: string
+ *               apellidoMaterno:
+ *                 type: string
  *               fotoPerfil:
  *                 type: string
  *               peso:
@@ -119,6 +115,22 @@ router.get('/:id', async (req, res) => {
  *                 format: date
  *               genero:
  *                 type: string
+ *               numeroIdentificacion:
+ *                 type: string
+ *               escolaridad:
+ *                 type: string
+ *               imc:
+ *                 type: number
+ *               numeroWhatsapp:
+ *                 type: string
+ *               direccion:
+ *                 type: string
+ *               ciudad:
+ *                 type: string
+ *               estadoProvincia:
+ *                 type: string
+ *               descripcionDetallada:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Usuario creado
@@ -126,16 +138,46 @@ router.get('/:id', async (req, res) => {
  *         description: Error en la solicitud
  */
 router.post('/', async (req, res) => {
-  const { correo, contrasena, nombre, fotoPerfil, peso, altura, fechaNacimiento, genero } = req.body;
+  const {
+    correo,
+    contrasena,
+    nombre,
+    apellidoPaterno,
+    apellidoMaterno,
+    fotoPerfil,
+    peso,
+    altura,
+    fechaNacimiento,
+    genero,
+    numeroIdentificacion,
+    escolaridad,
+    imc,
+    numeroWhatsapp,
+    direccion,
+    ciudad,
+    estadoProvincia,
+    descripcionDetallada
+  } = req.body;
+
   const nuevoUsuario = new Usuario({
     correo,
     contrasena,
     nombre,
-    fotoPerfil,
+    apellidoPaterno,
+    apellidoMaterno,
+    fotoPerfil: fotoPerfil || null,
     peso: peso || null,
     altura: altura || null,
     fechaNacimiento,
-    genero
+    genero,
+    numeroIdentificacion: numeroIdentificacion || null,
+    escolaridad: escolaridad || null,
+    imc,
+    numeroWhatsapp: numeroWhatsapp || null,
+    direccion: direccion || null,
+    ciudad,
+    estadoProvincia: estadoProvincia || null,
+    descripcionDetallada: descripcionDetallada || null,
   });
   
   try {
@@ -166,6 +208,10 @@ router.post('/', async (req, res) => {
  *                 type: string
  *               nombre:
  *                 type: string
+ *               apellidoPaterno:
+ *                 type: string
+ *               apellidoMaterno:
+ *                 type: string
  *               fotoPerfil:
  *                 type: string
  *               peso:
@@ -177,6 +223,22 @@ router.post('/', async (req, res) => {
  *                 format: date
  *               genero:
  *                 type: string
+ *               numeroIdentificacion:
+ *                 type: string
+ *               escolaridad:
+ *                 type: string
+ *               imc:
+ *                 type: number
+ *               numeroWhatsapp:
+ *                 type: string
+ *               direccion:
+ *                 type: string
+ *               ciudad:
+ *                 type: string
+ *               estadoProvincia:
+ *                 type: string
+ *               descripcionDetallada:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Usuario registrado y token generado
@@ -184,16 +246,46 @@ router.post('/', async (req, res) => {
  *         description: Error en la solicitud
  */
 router.post('/register', async (req, res) => {
-  const { correo, contrasena, nombre, fotoPerfil, peso, altura, fechaNacimiento, genero } = req.body;
+  const {
+    correo,
+    contrasena,
+    nombre,
+    apellidoPaterno,
+    apellidoMaterno,
+    fotoPerfil,
+    peso,
+    altura,
+    fechaNacimiento,
+    genero,
+    numeroIdentificacion,
+    escolaridad,
+    imc,
+    numeroWhatsapp,
+    direccion,
+    ciudad,
+    estadoProvincia,
+    descripcionDetallada
+  } = req.body;
+
   const nuevoUsuario = new Usuario({
     correo,
     contrasena,
     nombre,
-    fotoPerfil,
+    apellidoPaterno,
+    apellidoMaterno,
+    fotoPerfil: fotoPerfil || null,
     peso: peso || null,
     altura: altura || null,
     fechaNacimiento,
-    genero
+    genero,
+    numeroIdentificacion: numeroIdentificacion || null,
+    escolaridad: escolaridad || null,
+    imc,
+    numeroWhatsapp: numeroWhatsapp || null,
+    direccion: direccion || null,
+    ciudad,
+    estadoProvincia: estadoProvincia || null,
+    descripcionDetallada: descripcionDetallada || null,
   });
 
   try {
@@ -276,6 +368,10 @@ router.post('/login', async (req, res) => {
  *                 type: string
  *               nombre:
  *                 type: string
+ *               apellidoPaterno:
+ *                 type: string
+ *               apellidoMaterno:
+ *                 type: string
  *               fotoPerfil:
  *                 type: string
  *               peso:
@@ -286,6 +382,22 @@ router.post('/login', async (req, res) => {
  *                 type: string
  *                 format: date
  *               genero:
+ *                 type: string
+ *               numeroIdentificacion:
+ *                 type: string
+ *               escolaridad:
+ *                 type: string
+ *               imc:
+ *                 type: number
+ *               numeroWhatsapp:
+ *                 type: string
+ *               direccion:
+ *                 type: string
+ *               ciudad:
+ *                 type: string
+ *               estadoProvincia:
+ *                 type: string
+ *               descripcionDetallada:
  *                 type: string
  *     responses:
  *       200:
