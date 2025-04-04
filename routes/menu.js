@@ -1,8 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const Menu = require('../models/Menu'); // Asegúrate de que la ruta al modelo sea la correcta
+const Menu = require('../models/Menu');
 
-// Obtener todos los menus
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Menu:
+ *       type: object
+ *       properties:
+ *         plan:
+ *           type: string
+ *           description: URL o ruta del archivo del plan (PDF o Word)
+ *         idUsuario:
+ *           type: string
+ *           description: ID del usuario al que pertenece el menú
+ *       required:
+ *         - plan
+ *         - idUsuario
+ */
+
+/**
+ * @swagger
+ * /menu:
+ *   get:
+ *     summary: Obtiene todos los menús
+ *     responses:
+ *       200:
+ *         description: Lista de menús
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Menu'
+ */
 router.get('/', async (req, res) => {
   try {
     const menus = await Menu.find();
@@ -12,7 +44,28 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener un menu por ID
+/**
+ * @swagger
+ * /menu/{id}:
+ *   get:
+ *     summary: Obtiene un menú por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del menú
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Menú encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Menu'
+ *       404:
+ *         description: Menú no encontrado
+ */
 router.get('/:id', async (req, res) => {
   try {
     const menu = await Menu.findById(req.params.id);
@@ -25,7 +78,27 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Crear un nuevo menu
+/**
+ * @swagger
+ * /menu:
+ *   post:
+ *     summary: Crea un nuevo menú
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Menu'
+ *     responses:
+ *       201:
+ *         description: Menú creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Menu'
+ *       500:
+ *         description: Error al crear el menú
+ */
 router.post('/', async (req, res) => {
   try {
     const nuevoMenu = new Menu(req.body);
@@ -36,7 +109,34 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar un menu por ID
+/**
+ * @swagger
+ * /menu/{id}:
+ *   put:
+ *     summary: Actualiza un menú por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del menú a actualizar
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Menu'
+ *     responses:
+ *       200:
+ *         description: Menú actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Menu'
+ *       404:
+ *         description: Menú no encontrado
+ */
 router.put('/:id', async (req, res) => {
   try {
     const menuActualizado = await Menu.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -49,7 +149,24 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar un menu por ID
+/**
+ * @swagger
+ * /menu/{id}:
+ *   delete:
+ *     summary: Elimina un menú por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del menú a eliminar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Menú eliminado correctamente
+ *       404:
+ *         description: Menú no encontrado
+ */
 router.delete('/:id', async (req, res) => {
   try {
     const menuEliminado = await Menu.findByIdAndDelete(req.params.id);
