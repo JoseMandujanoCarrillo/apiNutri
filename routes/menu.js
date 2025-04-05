@@ -22,8 +22,16 @@ const Menu = require('../models/Menu');
 
 /**
  * @swagger
+ * tags:
+ *   - name: Menu
+ *     description: Endpoints para la gestión de menús
+ */
+
+/**
+ * @swagger
  * /menu:
  *   get:
+ *     tags: [Menu]
  *     summary: Obtiene todos los menús
  *     responses:
  *       200:
@@ -48,6 +56,7 @@ router.get('/', async (req, res) => {
  * @swagger
  * /menu/{id}:
  *   get:
+ *     tags: [Menu]
  *     summary: Obtiene un menú por ID
  *     parameters:
  *       - in: path
@@ -82,6 +91,7 @@ router.get('/:id', async (req, res) => {
  * @swagger
  * /menu:
  *   post:
+ *     tags: [Menu]
  *     summary: Crea un nuevo menú
  *     requestBody:
  *       required: true
@@ -113,6 +123,7 @@ router.post('/', async (req, res) => {
  * @swagger
  * /menu/{id}:
  *   put:
+ *     tags: [Menu]
  *     summary: Actualiza un menú por ID
  *     parameters:
  *       - in: path
@@ -153,6 +164,7 @@ router.put('/:id', async (req, res) => {
  * @swagger
  * /menu/{id}:
  *   delete:
+ *     tags: [Menu]
  *     summary: Elimina un menú por ID
  *     parameters:
  *       - in: path
