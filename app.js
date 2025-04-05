@@ -33,6 +33,8 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// En tu app.js, antes de definir las rutas
+app.use('/uploads', express.static('uploads'));
 
 app.use(express.json());
 app.use('/usuarios', usuariosRoutes);

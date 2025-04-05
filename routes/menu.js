@@ -1,7 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const Menu = require('../models/Menu');
 
+// Configuración de almacenamiento para archivos subidos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Carpeta donde se guardarán los archivos
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
+
+// Swagger: Esquema del objeto Menu
 /**
  * @swagger
  * components:
@@ -16,10 +30,24 @@ const Menu = require('../models/Menu');
  *           type: string
  *           description: ID del usuario al que pertenece el menú
  *       required:
- *         - plan
  *         - idUsuario
+ *   requestBodies:
+ *     MenuFile:
+ *       description: Objeto de menú con archivo
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               plan:
+ *                 type: string
+ *                 format: binary
+ *               idUsuario:
+ *                 type: string
  */
 
+// Swagger: Tag para agrupar endpoints de menú
 /**
  * @swagger
  * tags:
@@ -92,13 +120,9 @@ router.get('/:id', async (req, res) => {
  * /menu:
  *   post:
  *     tags: [Menu]
- *     summary: Crea un nuevo menú
+ *     summary: Crea un nuevo menú con un archivo
  *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Menu'
+ *       $ref: '#/components/requestBodies/MenuFile'
  *     responses:
  *       201:
  *         description: Menú creado exitosamente
@@ -109,8 +133,12 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Error al crear el menú
  */
-router.post('/', async (req, res) => {
+router.post('/', upload.single('plan'), async (req, res) => {
   try {
+    // Si se sube un archivo, se asigna la ruta al campo plan
+    if (req.file) {
+      req.body.plan = req.file.path;
+    }
     const nuevoMenu = new Menu(req.body);
     const menuGuardado = await nuevoMenu.save();
     res.status(201).json(menuGuardado);
@@ -124,7 +152,7 @@ router.post('/', async (req, res) => {
  * /menu/{id}:
  *   put:
  *     tags: [Menu]
- *     summary: Actualiza un menú por ID
+ *     summary: Actualiza un menú por ID, permite actualizar el archivo
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,11 +161,17 @@ router.post('/', async (req, res) => {
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
+ *       description: Objeto de menú con archivo opcional
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Menu'
+ *             type: object
+ *             properties:
+ *               plan:
+ *                 type: string
+ *                 format: binary
+ *               idUsuario:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Menú actualizado exitosamente
@@ -148,8 +182,11 @@ router.post('/', async (req, res) => {
  *       404:
  *         description: Menú no encontrado
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('plan'), async (req, res) => {
   try {
+    if (req.file) {
+      req.body.plan = req.file.path;
+    }
     const menuActualizado = await Menu.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!menuActualizado) {
       return res.status(404).json({ message: 'Menu no encontrado' });
