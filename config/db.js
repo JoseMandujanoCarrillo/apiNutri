@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-// URI apuntando específicamente a la base de datos appNutri
-const uri = "mongodb+srv://eenfse:admin1987@cluster0.yj36aye.mongodb.net/appNutri?retryWrites=true&w=majority&appName=Cluster0";
-
+const uri = "mongodb+srv://eenfse:admin1987@cluster0.yj36aye.mongodb.net/AppNutri?retryWrites=true&w=majority&appName=Cluster0";
 const connectDB = async () => {
   try {
     await mongoose.connect(uri, {
