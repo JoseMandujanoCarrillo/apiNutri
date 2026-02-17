@@ -1,32 +1,22 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongoose = require('mongoose');
 
-// URI corregida con tus credenciales para Cluster0
-const uri = "mongodb+srv://eenfse:admin1987@cluster0.yj36aye.mongodb.net/?appName=Cluster0";
+// URI apuntando específicamente a la base de datos appNutri
+const uri = "mongodb+srv://eenfse:admin1987@cluster0.yj36aye.mongodb.net/appNutri?retryWrites=true&w=majority&appName=Cluster0";
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-
-async function connectDB() {
+const connectDB = async () => {
   try {
-    // Conectamos pero NO CERRAMOS la conexión al terminar
-    await client.connect();
-    
-    // Verificamos conexión con la DB administrativa
-    await client.db("admin").command({ ping: 1 });
-    console.log("¡Conexión exitosa a MongoDB Cluster0!");
-    
-    // Retornamos la base de datos AppNutri para usarla en las rutas
-    return client.db("AppNutri"); 
-  } catch (error) {
-    console.error("Error al conectar a MongoDB:", error);
-    process.exit(1); // Si falla la conexión, detenemos el servidor
-  }
-}
+    await mongoose.connect(uri, {
+      // Estas opciones evitan el "Buffering Timeout" al fallar rápido si no hay red
+      serverSelectionTimeoutMS: 5000, 
+      socketTimeoutMS: 45000,
+    });
 
-// Exportamos el cliente y la función para que app.js la use
-module.exports = { connectDB, client };
+    console.log('¡Conexión exitosa a MongoDB: Cluster0 -> appNutri!');
+  } catch (error) {
+    console.error('Error de conexión a MongoDB:', error.message);
+    // En lugar de buffering, detenemos el proceso para que Render reinicie limpio
+    process.exit(1); 
+  }
+};
+
+module.exports = { connectDB };
