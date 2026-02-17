@@ -1,7 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 // URI corregida con tus credenciales para Cluster0
-const uri = "mongodb+srv://eenfse:admin1987@cluster0.yj36aye.mongodb.net/?appName=Cluster0";
+const uri = "mongodb+srv://Nutri:Nutri@cluster0.yj36aye.mongodb.net/?appName=Cluster0";
 
 const client = new MongoClient(uri, {
   serverApi: {

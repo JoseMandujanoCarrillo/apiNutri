@@ -24,6 +24,11 @@ const SECRET_KEY = process.env.JWT_SECRET || 'secret';
  * type: string
  * contrasena:
  * type: string
+ * responses:
+ * 200:
+ * description: Autenticación exitosa
+ * 401:
+ * description: Credenciales incorrectas
  */
 router.post('/login-unificado', async (req, res) => {
   const { correo, contrasena } = req.body;
@@ -68,5 +73,6 @@ router.post('/login-unificado', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 module.exports = router;
