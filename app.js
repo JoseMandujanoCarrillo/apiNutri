@@ -1,64 +1,42 @@
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsDoc = require('swagger-jsdoc');
-const cors = require('cors'); // Movido arriba para mejor práctica
-const { connectDB } = require('./config/db'); // IMPORTANTE: Ahora con llaves { }
-const usuariosRoutes = require('./routes/usuarios');
-const adminRoutes = require('./routes/admins');
-const menu = require('./routes/menu');
+const cors = require('cors');
+const { connectDB } = require('./config/db');
+const Admin = require('./models/Admin');
+const Usuario = require('./models/Usuario'); // Asegúrate de tener este modelo
+const jwt = require('jsonwebtoken');
 
 const app = express();
-
-// Middlewares base
-app.use(cors()); // Se recomienda activar CORS antes de las rutas
+app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
-// Conectar a la base de datos AppNutri
-connectDB()
-  .then(() => console.log('¡Conexión exitosa a MongoDB Cluster0!'))
-  .catch((error) => {
-    console.error('Error crítico al conectar a la base de datos:', error.message);
-    // No cerramos el proceso aquí para permitir que Render intente reconectar si es necesario
-  });
+const SECRET_KEY = process.env.JWT_SECRET || 'secret';
 
-// Swagger definition
-const swaggerOptions = {
-  swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API de Nutrición - NutriApp',
-      version: '1.0.0',
-      description: 'Documentación de la API para gestionar pacientes, cálculos y dietas',
-    },
-    servers: [
-      {
-        url: 'https://apinutri-mo1e.onrender.com',
-      },
-      {
-        url: 'http://localhost:3000',
-      },
-    ],
-  },
-  apis: ['./routes/*.js'],
-};
+// RUTA QUE BUSCA TU APP DE FLUTTER
+app.post('/login-unificado', async (req, res) => {
+  const { correo, contrasena } = req.body;
+  try {
+    // 1. Buscar en Administradores
+    let user = await Admin.findOne({ correo });
+    let role = 'admin';
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    // 2. Si no es admin, buscar en Usuarios (Pacientes)
+    if (!user) {
+      user = await Usuario.findOne({ correo });
+      role = 'patient';
+    }
 
-// Definición de Rutas
-app.use('/usuarios', usuariosRoutes); // [cite: 1-13, 87]
-app.use('/admins', adminRoutes);
-app.use('/menu', menu);
+    if (!user || user.contrasena !== contrasena) {
+      return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
+    }
 
-// Middleware para manejar errores global
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Algo salió mal en el servidor!', mensaje: err.message });
+    const token = jwt.sign({ id: user._id, role }, SECRET_KEY, { expiresIn: '1h' });
+    res.json({ token, role, nombre: user.nombre });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en: http://localhost:${PORT}`);
-  console.log(`Documentación Swagger en: http://localhost:${PORT}/api-docs`);
+connectDB().then(() => {
+  app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
 });
