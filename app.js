@@ -2,8 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./config/db');
 const Admin = require('./models/Admin');
-const Usuario = require('./models/Usuario'); // Asegúrate de tener este modelo
+const Usuario = require('./models/Usuario');
 const jwt = require('jsonwebtoken');
+
+// 1. IMPORTA TU ARCHIVO DE RUTAS DE USUARIOS
+const usuariosRoutes = require('./routes/usuarios'); 
 
 const app = express();
 app.use(cors());
@@ -11,15 +14,16 @@ app.use(express.json());
 
 const SECRET_KEY = process.env.JWT_SECRET || 'secret';
 
-// RUTA QUE BUSCA TU APP DE FLUTTER
+// 2. CONECTA LAS RUTAS (Esto quita el error "Cannot GET /usuarios")
+app.use('/usuarios', usuariosRoutes); 
+
+// RUTA DE LOGIN UNIFICADO
 app.post('/login-unificado', async (req, res) => {
   const { correo, contrasena } = req.body;
   try {
-    // 1. Buscar en Administradores
     let user = await Admin.findOne({ correo });
     let role = 'admin';
 
-    // 2. Si no es admin, buscar en Usuarios (Pacientes)
     if (!user) {
       user = await Usuario.findOne({ correo });
       role = 'patient';
