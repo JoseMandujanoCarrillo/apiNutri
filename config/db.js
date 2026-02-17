@@ -1,13 +1,32 @@
-const mongoose = require('mongoose');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect('mongodb+srv://JoseCarrillo:CarrilloM27@miguelapi.8or9enx.mongodb.net/Nutribase?retryWrites=true&w=majority');
-    console.log('Conectado a MongoDB');
-  } catch (error) {
-    console.error('Error al conectar a MongoDB:', error.message);
-    process.exit(1);
+// URI corregida con tus credenciales para Cluster0
+const uri = "mongodb+srv://eenfse:CarrilloM27@cluster0.yj36aye.mongodb.net/?appName=Cluster0";
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
   }
-};
+});
 
-module.exports = connectDB;
+async function connectDB() {
+  try {
+    // Conectamos pero NO CERRAMOS la conexión al terminar
+    await client.connect();
+    
+    // Verificamos conexión con la DB administrativa
+    await client.db("admin").command({ ping: 1 });
+    console.log("¡Conexión exitosa a MongoDB Cluster0!");
+    
+    // Retornamos la base de datos AppNutri para usarla en las rutas
+    return client.db("AppNutri"); 
+  } catch (error) {
+    console.error("Error al conectar a MongoDB:", error);
+    process.exit(1); // Si falla la conexión, detenemos el servidor
+  }
+}
+
+// Exportamos el cliente y la función para que app.js la use
+module.exports = { connectDB, client };

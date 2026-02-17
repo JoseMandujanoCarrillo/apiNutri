@@ -24,7 +24,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'https://apinutri-6zku.onrender.com',
+        url: 'https://apinutri-mo1e.onrender.com',
       },
     ],
   },
