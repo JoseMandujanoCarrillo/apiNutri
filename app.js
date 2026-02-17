@@ -1,54 +1,64 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const cors = require('cors'); // Movido arriba para mejor práctica
+const { connectDB } = require('./config/db'); // IMPORTANTE: Ahora con llaves { }
 const usuariosRoutes = require('./routes/usuarios');
-const connectDB = require('./config/db'); // Importar la conexión a la base de datos
 const adminRoutes = require('./routes/admins');
-const cors = require('cors');
 const menu = require('./routes/menu');
+
 const app = express();
 
-// Conectar a la base de datos
+// Middlewares base
+app.use(cors()); // Se recomienda activar CORS antes de las rutas
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// Conectar a la base de datos AppNutri
 connectDB()
-  .then(() => console.log('Conexión a la base de datos establecida correctamente'))
-  .catch((error) => console.error('Error al conectar a la base de datos:', error.message));
+  .then(() => console.log('¡Conexión exitosa a MongoDB Cluster0!'))
+  .catch((error) => {
+    console.error('Error crítico al conectar a la base de datos:', error.message);
+    // No cerramos el proceso aquí para permitir que Render intente reconectar si es necesario
+  });
 
 // Swagger definition
 const swaggerOptions = {
   swaggerDefinition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Usuarios',
+      title: 'API de Nutrición - NutriApp',
       version: '1.0.0',
-      description: 'Documentación de la API para gestionar usuarios',
+      description: 'Documentación de la API para gestionar pacientes, cálculos y dietas',
     },
     servers: [
       {
         url: 'https://apinutri-mo1e.onrender.com',
       },
+      {
+        url: 'http://localhost:3000',
+      },
     ],
   },
-  apis: ['./routes/*.js'], // Path to the API docs
+  apis: ['./routes/*.js'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-// En tu app.js, antes de definir las rutas
-app.use('/uploads', express.static('uploads'));
 
-app.use(express.json());
-app.use('/usuarios', usuariosRoutes);
+// Definición de Rutas
+app.use('/usuarios', usuariosRoutes); // [cite: 1-13, 87]
 app.use('/admins', adminRoutes);
 app.use('/menu', menu);
-app.use(cors());
-// Middleware para manejar errores
+
+// Middleware para manejar errores global
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Algo salió mal!');
+  res.status(500).json({ error: 'Algo salió mal en el servidor!', mensaje: err.message });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en  http://localhost:${PORT}`);
-  console.log(`Servidor corriendo con swagger en  http://localhost:${PORT}/api-docs`);
+  console.log(`Servidor corriendo en: http://localhost:${PORT}`);
+  console.log(`Documentación Swagger en: http://localhost:${PORT}/api-docs`);
 });
